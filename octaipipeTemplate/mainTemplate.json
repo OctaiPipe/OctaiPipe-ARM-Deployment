@@ -40,7 +40,7 @@
             "kind": "AzurePowerShell",
             "properties": {
                 "azPowerShellVersion": "6.0",
-                "primaryScriptUri": "",
+                "primaryScriptUri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/AzureSPAppAndPermissionsSetup.ps1",
                 "arguments": "[concat('-customerName ', parameters('customerName'), 
                                     ' -subscriptionId ', parameters('subscriptionId'), 
                                     ' -tenantId ', parameters('tenantId'), 
