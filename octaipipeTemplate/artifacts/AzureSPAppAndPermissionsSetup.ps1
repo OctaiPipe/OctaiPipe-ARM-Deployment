@@ -114,14 +114,13 @@ function Setup-Authentication($app, $sp) {
 function Assign-UserAndGroup($app, $sp) {
     # For each user email, get the user, then assign them to the application
     foreach ($userEmail in $userEmails) {
-        $user = $user = Get-AzureADUser -ObjectId '$userEmail'"
-
+        $user = Get-AzureADUser -ObjectId $userEmail
         # Assign the user to the app role
         New-AzureADUserAppRoleAssignment -ObjectId $user.ObjectId -PrincipalId $user.ObjectId -ResourceId $sp.Id -Id $readersAppRoleId
     }
 
     $groupName = "${customerName}-octaipipe-users"
-    $group = New-AzureADGroup -DisplayName $groupName -MailEnabled $false -SecurityEnabled $true -MailNickName "NotUsed" -Description "Group for OctaiPipe Users"
+    $group = New-AzureADGroup -DisplayName $groupName -MailEnabled $false -SecurityEnabled $true -MailNickName "NotUsed" -Description "Group For OctaiPipe Users"
 
     # Add the Service Principal as the owner of the group
     Add-AzureADGroupOwner -ObjectId $group.ObjectId -RefObjectId $sp.Id
