@@ -2,9 +2,13 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "managedIdentityId": {
+        "type": "string",
+        "defaultValue": "/subscriptions/0376d230-c884-4b5d-80b2-6759120231fc/resourceGroups/test-arm-deployment/providers/Microsoft.ManagedIdentity/userAssignedIdentities/octaipipe-setup-identity"
+    },
     "customerName": {
       "type": "string",
-      "defaultValue": "arm-autodeploy-test-second-pass"
+      "defaultValue": "CompanyA"
     },
     "subscriptionId": {
       "type": "string",
@@ -34,14 +38,20 @@
   "resources": [
     {
       "type": "Microsoft.Resources/deploymentScripts",
-      "apiVersion": "2021-01-01",
+      "apiVersion": "2020-10-01",
       "name": "runADSetupScriptScript",
       "location": "[resourceGroup().location]",
       "kind": "AzurePowerShell",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[parameters('managedIdentityId')]": {}
+        }
+      },
       "properties": {
         "azPowerShellVersion": "6.0",
         "primaryScriptUri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/AzureSPAppAndPermissionsSetup.ps1",
-        "arguments": "[concat('-customerName ', parameters('customerName'), ' -subscriptionId ', parameters('subscriptionId'), ' -tenantId ', parameters('tenantId'), ' -userEmails ', string(join(',', parameters('userEmails'))))]",
+        "arguments": "[concat('-customerName ', parameters('customerName'), ' -subscriptionId ', parameters('subscriptionId'), ' -tenantId ', parameters('tenantId'), ' -userEmails ', string(join(parameters('userEmails'), ',')))]",
         "timeout": "PT30M",
         "cleanupPreference": "OnSuccess",
         "retentionInterval": "P1D"
@@ -64,22 +74,22 @@
             "value": "parameters('customerName')"
           },
           "azureAdGroupName": {
-            "value": "[reference('azureAdDeploymentScript').outputs.azureAdGroupName.value]"
+            "value": "[reference('runADSetupScriptScript').outputs.azureAdGroupName.value]"
           },
           "azureAdGroupId": {
-            "value": "[reference('azureAdDeploymentScript').outputs.azureAdGroupId.value]"
+            "value": "[reference('runADSetupScriptScript').outputs.azureAdGroupId.value]"
           },
           "clientId": {
-            "value": "[reference('azureAdDeploymentScript').outputs.clientId.value]"
+            "value": "[reference('runADSetupScriptScript').outputs.clientId.value]"
           },
           "tenantId": {
             "value": "[parameters('tenantId')]"
           },
           "objectId": {
-            "value": "[reference('azureAdDeploymentScript').outputs.objectId.value]"
+            "value": "[reference('runADSetupScriptScript').outputs.objectId.value]"
           },
           "servicePrincipalSecret": {
-            "value": "[reference('azureAdDeploymentScript').outputs.servicePrincipalSecret.value]"
+            "value": "[reference('runADSetupScriptScript').outputs.servicePrincipalSecret.value]"
           },
           "sqlAdminLogin": {
             "value": "[parameters('sqlAdminLogin')]"
