@@ -1,7 +1,7 @@
 param (
-    [string]$customerName # = "arm-autodeploy-test-second-pass",
-    [string]$subscriptionId # = "0376d230-c884-4b5d-80b2-6759120231fc",
-    [string]$tenantId = # "9485acfb-a348-4a74-8408-be47f710df4b",
+    [string]$customerName, # = "arm-autodeploy-test-second-pass",
+    [string]$subscriptionId, # = "0376d230-c884-4b5d-80b2-6759120231fc",
+    [string]$tenantId, = # "9485acfb-a348-4a74-8408-be47f710df4b",
     [string]$userEmails # = "michael.tobin@t-dab.com, ivan.scattergood@t-dab.com, michael.tobin27@outlook.com"  # This will be a comma-separated string
 )
 
