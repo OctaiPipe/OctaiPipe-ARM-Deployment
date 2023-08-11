@@ -15,6 +15,9 @@ function Setup-AzureContext {
     # Install the Az module
     Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force
 
+    # Install Az Accoutn module
+    Install-Module -Name Az.Accounts -RequiredVersion 2.12.5 -AllowClobber
+
     # Login to Azure AD
     Connect-AzAccount -TenantId $tenantId -Subscription $subscriptionId
 
