@@ -1,94 +1,94 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-    "parameters": {
-        "customerName": {
-            "type": "string",
-            "defaultValue": "arm-autodeploy-test-second-pass"
-        },
-        "subscriptionId": {
-            "type": "string",
-            "defaultValue": "0376d230-c884-4b5d-80b2-6759120231fc"
-        },
-        "tenantId": {
-            "type": "string",
-            "defaultValue": "9485acfb-a348-4a74-8408-be47f710df4b"
-        },
-        "userEmails": {
-            "type": "array",
-            "defaultValue": [
-                "michael.tobin@t-dab.com", 
-                "ivan.scattergood@t-dab.com", 
-                "michael.tobin27@outlook.com"
-            ]
-        },
-        "sqlAdminLogin":{
-            "defaultValue":"octaiadmin",
-            "type":"string",
-            "minLength":1
-        },
-        "sqlAdminLoginPassword":{
-            "type":"securestring"
-        }
+  "parameters": {
+    "customerName": {
+      "type": "string",
+      "defaultValue": "arm-autodeploy-test-second-pass"
     },
+    "subscriptionId": {
+      "type": "string",
+      "defaultValue": "0376d230-c884-4b5d-80b2-6759120231fc"
+    },
+    "tenantId": {
+      "type": "string",
+      "defaultValue": "9485acfb-a348-4a74-8408-be47f710df4b"
+    },
+    "userEmails": {
+      "type": "array",
+      "defaultValue": [
+        "michael.tobin@t-dab.com",
+        "ivan.scattergood@t-dab.com",
+        "michael.tobin27@outlook.com"
+      ]
+    },
+    "sqlAdminLogin": {
+      "defaultValue": "octaiadmin",
+      "type": "string",
+      "minLength": 1
+    },
+    "sqlAdminLoginPassword": {
+      "type": "securestring"
+    }
+  },
   "resources": [
-       {
-            "type": "Microsoft.Resources/deploymentScripts",
-            "apiVersion": "2021-01-01",
-            "name": "runADSetupScriptScript",
-            "location": "[resourceGroup().location]",
-            "kind": "AzurePowerShell",
-            "properties": {
-                "azPowerShellVersion": "6.0",
-                "primaryScriptUri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/AzureSPAppAndPermissionsSetup.ps1",
-                "arguments": "[concat('-customerName ', parameters('customerName'), 
-                                    ' -subscriptionId ', parameters('subscriptionId'), 
-                                    ' -tenantId ', parameters('tenantId'), 
-                                    ' -userEmails ', string(join(',', parameters('userEmails'))))]",
-                "timeout": "PT30M",
-                "cleanupPreference": "OnSuccess",
-                "retentionInterval": "P1D"
-            }
-        },
-        {
-    "name": "linkedTemplate",
-    "dependsOn": ["runADSetupScriptScript"],
-    "type": "Microsoft.Resources/deployments",
-    "apiVersion": "2022-09-01",
-    "properties": {
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2021-01-01",
+      "name": "runADSetupScriptScript",
+      "location": "[resourceGroup().location]",
+      "kind": "AzurePowerShell",
+      "properties": {
+        "azPowerShellVersion": "6.0",
+        "primaryScriptUri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/AzureSPAppAndPermissionsSetup.ps1",
+        "arguments": "[concat('-customerName ', parameters('customerName'), ' -subscriptionId ', parameters('subscriptionId'), ' -tenantId ', parameters('tenantId'), ' -userEmails ', string(join(',', parameters('userEmails'))))]",
+        "timeout": "PT30M",
+        "cleanupPreference": "OnSuccess",
+        "retentionInterval": "P1D"
+      }
+    },
+    {
+      "name": "linkedTemplate",
+      "dependsOn": [
+        "runADSetupScriptScript"
+      ],
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "properties": {
         "mode": "Incremental",
         "templateLink": {
-            "uri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/linkedTemplate.json"
-            },
+          "uri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/linkedTemplate.json"
+        },
         "parameters": {
-            "customerName":{
-            "value":"parameters('customerName')"
-            },
-            "azureAdGroupName": {
-                "value": "[reference('azureAdDeploymentScript').outputs.azureAdGroupName.value]"
-            },
-            "azureAdGroupId": {
-                "value": "[reference('azureAdDeploymentScript').outputs.azureAdGroupId.value]"
-            },
-            "clientId": {
-                "value": "[reference('azureAdDeploymentScript').outputs.clientId.value]"
-            },
-            "tenantId": {
-                "value": "[parameters('tenantId')]"
-            },
-            "objectId": {
-                "value": "[reference('azureAdDeploymentScript').outputs.objectId.value]"
-            },
-            "servicePrincipalSecret": {
-                "value": "[reference('azureAdDeploymentScript').outputs.servicePrincipalSecret.value]"
-            },
-            "sqlAdminLogin":{
-            "value":"[parameters('sqlAdminLogin')]"
-            },
-            "sqlAdminLoginPassword":{
-            "value":"[parameters('sqlAdminLoginPassword')]"
-            }
+          "customerName": {
+            "value": "parameters('customerName')"
+          },
+          "azureAdGroupName": {
+            "value": "[reference('azureAdDeploymentScript').outputs.azureAdGroupName.value]"
+          },
+          "azureAdGroupId": {
+            "value": "[reference('azureAdDeploymentScript').outputs.azureAdGroupId.value]"
+          },
+          "clientId": {
+            "value": "[reference('azureAdDeploymentScript').outputs.clientId.value]"
+          },
+          "tenantId": {
+            "value": "[parameters('tenantId')]"
+          },
+          "objectId": {
+            "value": "[reference('azureAdDeploymentScript').outputs.objectId.value]"
+          },
+          "servicePrincipalSecret": {
+            "value": "[reference('azureAdDeploymentScript').outputs.servicePrincipalSecret.value]"
+          },
+          "sqlAdminLogin": {
+            "value": "[parameters('sqlAdminLogin')]"
+          },
+          "sqlAdminLoginPassword": {
+            "value": "[parameters('sqlAdminLoginPassword')]"
+          }
         }
+      }
     }
-    }]
+  ]
 }
