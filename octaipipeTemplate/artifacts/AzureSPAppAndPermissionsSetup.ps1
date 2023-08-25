@@ -129,7 +129,7 @@ function Assign-UserAndGroup($app, $sp) {
     Add-AzureADGroupOwner -ObjectId $group.ObjectId -RefObjectId $sp.Id
 
     # Create a new AppRoleAssignment for the group
-    New-AzureADGroupAppRoleAssignment -ObjectId $group.ObjectId -PrincipalId $group.ObjectId -ResourceId $sp.Id -Id $readersAppRoleID
+    New-AzureADGroupAppRoleAssignment -ObjectId $group.ObjectId -PrincipalId $group.ObjectId -ResourceId $sp.Id -Id $readersAppRoleId
 
     return $group
 }
