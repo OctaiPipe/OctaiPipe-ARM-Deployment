@@ -2,10 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "managedIdentityId": {
-        "type": "string",
-        "defaultValue": "/subscriptions/0376d230-c884-4b5d-80b2-6759120231fc/resourceGroups/test-arm-deployment/providers/Microsoft.ManagedIdentity/userAssignedIdentities/octaipipe-setup-identity"
-    },
     "customerName": {
       "type": "string",
       "defaultValue": "CompanyA"
@@ -37,17 +33,35 @@
   },
   "resources": [
     {
+    "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+    "apiVersion": "2018-11-30",
+    "name": "[variables('userAssignedIdentityName')]",
+    "location": "[resourceGroup().location]"
+  },
+  {
+    "type": "Microsoft.Authorization/roleAssignments",
+    "apiVersion": "2020-04-01-preview",
+    "name": "[variables('roleAssignmentName')]",
+    "dependsOn": [ "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedIdentityName'))]" ],
+    "properties": {
+        "roleDefinitionId": "[variables('contributorRoleDefinitionId')]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedIdentityName')), '2015-08-31-preview').principalId]",
+        "scope": "[resourceGroup().id]",
+        "principalType": "ServicePrincipal"
+    }
+},
+    {
       "type": "Microsoft.Resources/deploymentScripts",
       "apiVersion": "2020-10-01",
       "name": "runADSetupScriptScript",
       "location": "[resourceGroup().location]",
       "kind": "AzurePowerShell",
-      "identity": {
+    "identity": {
         "type": "UserAssigned",
         "userAssignedIdentities": {
-          "[parameters('managedIdentityId')]": {}
+            "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',variables('userAssignedIdentityName'))]": {}
         }
-      },
+    },
       "properties": {
         "azPowerShellVersion": "6.0",
         "primaryScriptUri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/AzureSPAppAndPermissionsSetup.ps1",
@@ -100,5 +114,10 @@
         }
       }
     }
-  ]
+  ],
+    "variables":{
+      "userAssignedIdentityName": "configDeployer",
+      "roleAssignmentName": "[guid(concat(resourceGroup().id, 'contributor'))]",
+      "contributorRoleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+    }
 }
