@@ -143,7 +143,7 @@ function Create-ClientSecret($app) {
 }
 
 # Execution of the functions
-Setup-AzureContext
+#Setup-AzureContext
 $app, $sp = Create-AppAndSP
 Setup-AppRoleAndPermissions $app $sp
 Setup-Authentication $app $sp
