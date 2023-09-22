@@ -36,5 +36,4 @@ The mainTemplate:
 - Install Azure CLI
 - Run az login
 - Either create a parameters file `octaipipeParams.json` or hard code in the mainTemplate paramaters section.
-- Create resource group:
-  - `az deployment group create --resource-group <YourResourceGroup> --template-file octaipipeTemplate/mainTemplate.json --parameters <parameters file if you've created one>`
+- `az deployment group create --resource-group <YourResourceGroup> --template-file octaipipeTemplate/mainTemplate.json --parameters <parameters file if you've created one>`
