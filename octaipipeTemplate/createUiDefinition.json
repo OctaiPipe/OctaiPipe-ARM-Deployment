@@ -1,101 +1,64 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
-  "handler": "Microsoft.Azure.CreateUIDef",
-  "version": "0.1.2-preview",
-  "parameters": {
-      "basics": [],
-      "steps": [
-          {
-              "name": "resourceConfig",
-              "label": "Resource Configuration",
-              "subLabel": {
-                  "preValidation": "Enter the following details",
-                  "postValidation": "Done"
-              },
-              "bladeTitle": "Resource Details",
-              "elements": [
-                  {
-                      "name": "customerName",
-                      "type": "Microsoft.Common.TextBox",
-                      "label": "Customer Name",
-                      "defaultValue": "arm-autodeploy-test-second-pass",
-                      "toolTip": "Enter the customer name",
-                      "constraints": {
-                          "required": true
-                      }
-                  },
-                  {
-                      "name": "subscriptionId",
-                      "type": "Microsoft.Common.TextBox",
-                      "label": "Subscription ID",
-                      "defaultValue": "0376d230-c884-4b5d-80b2-6759120231fc",
-                      "toolTip": "Enter the subscription ID",
-                      "constraints": {
-                          "required": true
-                      }
-                  },
-                  {
-                      "name": "tenantId",
-                      "type": "Microsoft.Common.TextBox",
-                      "label": "Tenant ID",
-                      "defaultValue": "9485acfb-a348-4a74-8408-be47f710df4b",
-                      "toolTip": "Enter the tenant ID",
-                      "constraints": {
-                          "required": true
-                      }
-                  },
-                  {
-                      "name": "userEmails",
-                      "type": "Microsoft.Common.TextBox",
-                      "label": "User Emails",
-                      "defaultValue": "michael.tobin@t-dab.com;ivan.scattergood@t-dab.com;michael.tobin27@outlook.com",
-                      "toolTip": "Enter user emails, separated by semicolons",
-                      "constraints": {
-                          "required": true
-                      }
-                  },
-                  {
-                      "name": "sqlAdminLogin",
-                      "type": "Microsoft.Common.TextBox",
-                      "label": "SQL Admin Login",
-                      "defaultValue": "octaiadmin",
-                      "toolTip": "Enter the SQL admin login",
-                      "constraints": {
-                          "required": true,
-                          "regex": "^[a-zA-Z0-9]*$",
-                          "validationMessage": "The SQL admin login should only contain alphanumeric characters."
-                      }
-                  },
-                  {
-                      "name": "sqlAdminLoginPassword",
-                      "type": "Microsoft.Common.PasswordBox",
-                      "label": {
-                          "password": "SQL Admin Password",
-                          "confirmPassword": "Confirm Password"
-                      },
-                      "toolTip": {
-                          "password": "Enter the SQL admin password",
-                          "confirmPassword": "Confirm the SQL admin password"
-                      },
-                      "constraints": {
-                          "required": true,
-                          "regex": "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])(?=.{8,})",
-                          "validationMessage": "The SQL admin password must be at least 8 characters long and include at least one letter, one number, and one special character."
-                      },
-                      "options": {
-                          "hideConfirmation": false
-                      }
-                  }
-              ]
+    "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+    "handler": "Microsoft.Azure.CreateUIDef",
+    "version": "0.1.2-preview",
+    "parameters": {
+      "basics": [
+        {
+          "name": "customerName",
+          "type": "Microsoft.Common.TextBox",
+          "label": "Customer Name",
+          "constraints": {
+            "required": true
           }
+        }
+      ],
+      "steps": [
+        {
+          "name": "settings",
+          "label": "Settings",
+          "subLabel": "",
+          "bladeTitle": "Settings",
+          "elements": [
+            {
+              "name": "managedIdentityName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Managed Identity Name",
+              "toolTip": "Enter only the name of the Managed Identity",
+              "constraints": {
+                "required": true
+              }
+            },
+            {
+              "name": "managedIdentityResourceGroup",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Managed Identity Resource Group",
+              "defaultValue": "[resourceGroup().name]",
+              "toolTip": "Resource group where the Managed Identity is located. If this is the same Resource Group as deloying to, leave blank.",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+                "name": "userEmails",
+                "type": "Microsoft.Common.TextBox",
+                "label": "User Emails",
+                "toolTip": "Enter email addresses of OctaiPipe users, separated by comma.",
+                "multiLine": true,
+                "constraints": {
+                  "required": true
+                }
+              }
+              
+          ]
+        }
       ],
       "outputs": {
-          "customerName": "[steps('resourceConfig').customerName]",
-          "subscriptionId": "[steps('resourceConfig').subscriptionId]",
-          "tenantId": "[steps('resourceConfig').tenantId]",
-          "userEmails": "[split(steps('resourceConfig').userEmails, ';')]",
-          "sqlAdminLogin": "[steps('resourceConfig').sqlAdminLogin]",
-          "sqlAdminLoginPassword": "[steps('resourceConfig').sqlAdminLoginPassword]"
+        "customerName": "[basics('customerName')]",
+        "managedIdentityName": "[steps('settings').managedIdentityName]",
+        "managedIdentityResourceGroup": "[steps('settings').managedIdentityResourceGroup]",
+        "userEmails": "[steps('settings').userEmails]"
       }
+    }
   }
-}
+  

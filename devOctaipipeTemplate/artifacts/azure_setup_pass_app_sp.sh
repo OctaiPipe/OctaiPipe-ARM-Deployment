@@ -12,7 +12,7 @@ app=$AZURE_CLIENT_ID
 customerName="finale5"
 subscriptionId="0376d230-c884-4b5d-80b2-6759120231fc"
 tenantId="9485acfb-a348-4a74-8408-be47f710df4b"
-userEmails_str="michael.tobin@octaipipe.ai"
+userEmails_str="michael.tobin@octaipipe.ai,sdfSFDA SDF,A SD,FA SD, FA,FS DF,A SD,SD,FAFDA , ASDFASD, ASDF"
 
 while getopts ":c:s:t:u:" opt; do
   case $opt in

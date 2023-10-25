@@ -1,0 +1,12 @@
+{
+    "Actions":  [
+                    "Microsoft.Authorization/roleAssignments/write",
+                    "Microsoft.Authorization/roleAssignments/delete"
+                ],
+    "IsCustom":  true,
+    "Name":  "CustomRoleWithRoleAssignments",
+    "Description":  "Allows write and delete on role assignments.",
+    "AssignableScopes":  [
+                             "/subscriptions/0376d230-c884-4b5d-80b2-6759120231fc"
+                         ]
+}

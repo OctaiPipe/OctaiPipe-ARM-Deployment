@@ -4,6 +4,13 @@ set -e
 az login --identity -u /subscriptions/0376d230-c884-4b5d-80b2-6759120231fc/resourceGroups/arm-test-deploy5/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ARM-deployer
 echo -e "\r\nLogged to to az with managed identity!"
 
+
+# Default values
+customerName="finale5"
+subscriptionId="0376d230-c884-4b5d-80b2-6759120231fc"
+tenantId="9485acfb-a348-4a74-8408-be47f710df4b"
+userEmails_str="michael.tobin@octaipipe.ai"
+
 while getopts ":c:s:t:u:" opt; do
   case $opt in
     c) customerName="$OPTARG" ;;
@@ -16,8 +23,7 @@ done
 
 
 echo -e "\r\nSetting up AD for $customerName !"
-IFS=',' read -ra userEmails <<< "$(echo "$userEmails_str" | tr -d '[:space:]')"
-
+IFS=',' read -ra userEmails <<< "$userEmails_str"
 
 # Check user emails input is valid before running anything
 notFoundEmails=()

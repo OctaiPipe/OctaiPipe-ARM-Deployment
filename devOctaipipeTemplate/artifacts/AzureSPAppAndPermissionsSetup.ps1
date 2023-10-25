@@ -1,11 +1,11 @@
 param (
-    [string]$customerName, # = "arm-autodeploy-test-second-pass",
-    [string]$subscriptionId, # = "0376d230-c884-4b5d-80b2-6759120231fc",
-    [string]$tenantId, #= "9485acfb-a348-4a74-8408-be47f710df4b",
-    [string]$userEmails # = "michael.tobin@t-dab.com, ivan.scattergood@t-dab.com, michael.tobin27@outlook.com"  # This will be a comma-separated string
+    [string]$customerName = "arm-autodeploy-test-second-pass",
+    [string]$subscriptionId = "0376d230-c884-4b5d-80b2-6759120231fc",
+    [string]$tenantId= "9485acfb-a348-4a74-8408-be47f710df4b",
+    [string]$userEmails = "michael.tobin@t-dab.com, ivan.scattergood@t-dab.com, michael.tobin27@outlook.com"  # This will be a comma-separated string
 )
 
-$userEmails = $userEmails -split ','  # Split the string back into an array
+$userEmails = $userEmails.Replace(" ", "") -split ','  # Split the string back into an array
 
 # Global Varibles
 $readersAppRoleId = [Guid]::NewGuid().ToString()
@@ -13,13 +13,13 @@ $readersAppRoleId = [Guid]::NewGuid().ToString()
 # Functions for installing the Az module and setting Azure context
 function Setup-AzureContext {
     # Install the Az module
-    Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force
+    # Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force
 
     # Install Az Accoutn module
-    Install-Module -Name Az.Accounts -RequiredVersion 2.12.5 -AllowClobber
+    # Install-Module -Name Az.Accounts -RequiredVersion 2.12.5 -AllowClobber
 
     # Login to Azure AD
-    Connect-AzAccount -TenantId $tenantId -Subscription $subscriptionId
+    # Connect-AzAccount -TenantId $tenantId -Subscription $subscriptionId
 
     # Set your subscription
     Set-AzContext -SubscriptionId $subscriptionId
@@ -143,7 +143,7 @@ function Create-ClientSecret($app) {
 }
 
 # Execution of the functions
-#Setup-AzureContext
+# Setup-AzureContext
 $app, $sp = Create-AppAndSP
 Setup-AppRoleAndPermissions $app $sp
 Setup-Authentication $app $sp

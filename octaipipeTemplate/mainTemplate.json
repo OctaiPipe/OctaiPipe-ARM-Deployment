@@ -1,138 +1,114 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "customerName": {
-      "type": "string",
-      "defaultValue": "CompanyA"
-    },
-    "subscriptionId": {
-      "type": "string",
-      "defaultValue": "0376d230-c884-4b5d-80b2-6759120231fc"
-    },
-    "tenantId": {
-      "type": "string",
-      "defaultValue": "9485acfb-a348-4a74-8408-be47f710df4b"
-    },
-    // "servicePrincipalId": {
-    //   "type": "string",
-    //   "defaultValue": "9485acfb-a348-4a74-8408-be47f710df4b"
-    // },
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "customerName": {
+        "type": "string"
+        //"defaultValue": "CompanyA"
+      },
+      "managedIdentityName": {
+        "type": "string"
+        //"defaultValue": "/subscriptions/0376d230-c884-4b5d-80b2-6759120231fc/resourceGroups/arm-test-deploy5/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ARM-deployer"
+      },
+      "managedIdentityResourceGroup": {
+        "type": "string",
+        "defaultValue": "[resourceGroup().Name]"
+      },
     "userEmails": {
-      "type": "array",
-      "defaultValue": [
-        "michael.tobin@t-dab.com",
-        "ivan.scattergood@t-dab.com",
-        "michael.tobin27@outlook.com"
-      ]
-    },
-    "guidValue": {
       "type": "string",
-      "defaultValue": "[newGuid()]"
-    },
-    "sqlAdminLogin": {
-      "defaultValue": "octaiadmin",
-      "type": "string",
-      "minLength": 1
-    },
-    "sqlAdminLoginPassword": {
-      "type": "securestring",
-      "defaultValue": "octaipassword"
-    }
-  },
-  "resources": [
-    {
-    "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
-    "apiVersion": "2018-11-30",
-    "name": "[variables('userAssignedIdentityName')]",
-    "location": "[resourceGroup().location]"
-  },
-  {
-    "type": "Microsoft.Authorization/roleAssignments",
-    "apiVersion": "2020-04-01-preview",
-    "name": "[variables('roleAssignmentName')]",
-    "dependsOn": [ 
-      "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedIdentityName'))]"
-      ],
-    "properties": {
-        "roleDefinitionId": "[variables('contributorRoleDefinitionId')]",
-        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userAssignedIdentityName')), '2015-08-31-preview').principalId]",
-        "scope": "[resourceGroup().id]",
-        "principalType": "ServicePrincipal"
-    }
-},
-    {
-      "type": "Microsoft.Resources/deploymentScripts",
-      "apiVersion": "2020-10-01",
-      "name": "runADSetupScript",
-      "dependsOn": [ 
-        "[resourceId('Microsoft.Authorization/roleAssignments', variables('roleAssignmentName'))]"
-      ],
-      "location": "[resourceGroup().location]",
-      "kind": "AzureCLI",
-    "identity": {
-        "type": "UserAssigned",
-        "userAssignedIdentities": {
-            "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities',variables('userAssignedIdentityName'))]": {}
-        }
-    },
-      "properties": {
-        "azCliVersion": "2.47.0",
-        "primaryScriptUri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/azure_setup.sh",
-        // try with env variables?
-        "arguments": "[concat('-c ', parameters('customerName'), ' -s ', parameters('subscriptionId'), ' -t ', parameters('tenantId'), ' -u ', string(join(parameters('userEmails'), ',')))]", 
-        "timeout": "PT30M",
-        "cleanupPreference": "OnSuccess",
-        "retentionInterval": "P1D"
+      "metadata": {
+        "description": "Newline-separated list of user email addresses"
       }
+    }
     },
-    {
-      "name": "linkedTemplate",
-      "dependsOn": [
-        "runADSetupScript"
-      ],
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/linkedTemplate.json"
-        },
-        "parameters": {
-          "customerName": {
-            "value": "parameters('customerName')"
+
+    "resources": [
+      {
+        "type": "Microsoft.Resources/deploymentScripts",
+        "apiVersion": "2020-10-01",
+        "name": "runADSetupScript",
+        "location": "[resourceGroup().location]",
+        "kind": "AzureCLI",
+      "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": {
+            "[resourceId(parameters('managedIdentityResourceGroup'), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]": {}
+          }
+      },
+        "properties": {
+          "azCliVersion": "2.47.0",
+          "primaryScriptUri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/azure_setup.sh",
+          // try with env variables?
+          "environmentVariables": [
+            {
+              "name": "readersAppRoleIdGuid",
+              "value": "[guid(parameters('customerName'))]"
+            }
+          ],
+          "arguments": "[concat('-c ', parameters('customerName'), ' -s ', variables('subscriptionId'), ' -t ', variables('tenantId'), ' -u ', parameters('userEmails'))]", 
+          "timeout": "PT30M",
+          "cleanupPreference": "OnSuccess",
+          "retentionInterval": "P1D"
+        }
+      },
+      {
+        "name": "linkedTemplate",
+        "dependsOn": [
+          "runADSetupScript"
+        ],
+        "type": "Microsoft.Resources/deployments",
+        "apiVersion": "2022-09-01",
+        "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+            "uri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/linkedTemplate.json"
           },
-          "azureAdGroupName": {
-            "value": "[reference('runADSetupScript').outputs.azureAdGroupName.value]"
-          },
-          "azureAdGroupId": {
-            "value": "[reference('runADSetupScript').outputs.azureAdGroupId.value]"
-          },
-          "clientId": {
-            "value": "[reference('runADSetupScript').outputs.clientId.value]"
-          },
-          "tenantId": {
-            "value": "[parameters('tenantId')]"
-          },
-          "objectId": {
-            "value": "[reference('runADSetupScript').outputs.objectId.value]"
-          },
-          "servicePrincipalSecret": {
-            "value": "[reference('runADSetupScript').outputs.servicePrincipalSecret.value]"
-          },
-          "sqlAdminLogin": {
-            "value": "[parameters('sqlAdminLogin')]"
-          },
-          "sqlAdminLoginPassword": {
-            "value": "[parameters('sqlAdminLoginPassword')]"
+          "parameters": {
+            "customerName": {
+              "value": "[parameters('customerName')]"
+            },
+            "azureAdGroupName": {
+              "value": "[reference('runADSetupScript').outputs.azureAdGroupName.value]"
+            },
+            "azureAdGroupId": {
+              "value": "[reference('runADSetupScript').outputs.azureAdGroupId.value]"
+            },
+            "clientId": {
+              "value": "[reference('runADSetupScript').outputs.clientId.value]"
+            },
+            "tenantId": {
+              "value": "[variables('tenantId')]"
+            },
+            "objectId": {
+              "value": "[reference('runADSetupScript').outputs.objectId.value]"
+            },
+            "servicePrincipalSecret": {
+              "value": "[reference('runADSetupScript').outputs.servicePrincipalSecret.value]"
+            },
+            "sqlAdminLogin": {
+              "value": "[variables('sqlAdminLogin')]"
+            },
+            "sqlAdminLoginPassword": {
+              "value": "[variables('sqlAdminLoginPassword')]"
+            }
           }
         }
       }
+  ],
+      "outputs": {
+        "sqlAdminLoginUser": {
+            "type": "string",
+            "value": "[variables('sqlAdminLoginUser')]"
+        },
+        "sqlAdminLoginPassword": {
+            "type": "string",
+            "value": "[variables('sqlAdminLoginPassword')]"
+        }
+    },
+      "variables":{
+        "tenantId": "[replace(subscription().id, '/tenants/', '')]",
+        "subscriptionId": "[replace(subscription().id, '/subscriptions/', '')]",
+        "sqlAdminLoginUser": "octaiadmin",
+        "sqlAdminLoginPassword": "[substring(uniqueString(resourceGroup().name), 0, 8)]",
+      }
     }
-],
-    "variables":{
-      "userAssignedIdentityName": "configDeployer",
-      "roleAssignmentName": "[parameters('guidValue')]",
-      "contributorRoleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]" // owner role b24988ac-6180-42a0-ab88-20f7382dd24c
-    }
-}
