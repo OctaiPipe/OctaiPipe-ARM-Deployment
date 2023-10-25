@@ -55,31 +55,31 @@ readersAppRoleId=$(uuidgen)
 az account set --subscription $subscriptionId
 echo "Azure context set!"
 
-# Create AppRoles
-appRoles="[
-  {
-    \"allowedMemberTypes\": [\"User\", \"Application\"],
-    \"displayName\": \"Readers\",
-    \"description\": \"Access OctaiClient API\",
-    \"isEnabled\": true,
-    \"value\": \"Task.Read\",
-    \"id\": \"$readersAppRoleId\"
-  }
-]"
+# # Create AppRoles
+# appRoles="[
+#   {
+#     \"allowedMemberTypes\": [\"User\", \"Application\"],
+#     \"displayName\": \"Readers\",
+#     \"description\": \"Access OctaiClient API\",
+#     \"isEnabled\": true,
+#     \"value\": \"Task.Read\",
+#     \"id\": \"$readersAppRoleId\"
+#   }
+# ]"
 
-# Create App and Service Principal
-app=$(az ad app create --display-name "${customerName}-admin" --sign-in-audience AzureADMyOrg --app-roles "$appRoles" --query appId -o tsv)
-objectId=$(az ad app list --filter "appId eq '$app'" --query "[].id" -o tsv)
-sp=$(az ad sp create --id $app --query id -o tsv)
-az ad sp update --id $sp --set "appRoleAssignmentRequired=true"
-echo "App and Service Principal created!"
+# # Create App and Service Principal
+# app=$(az ad app create --display-name "${customerName}-admin" --sign-in-audience AzureADMyOrg --app-roles "$appRoles" --query appId -o tsv)
+# objectId=$(az ad app list --filter "appId eq '$app'" --query "[].id" -o tsv)
+# sp=$(az ad sp create --id $app --query id -o tsv)
+# az ad sp update --id $sp --set "appRoleAssignmentRequired=true"
+# echo "App and Service Principal created!"
 
-# Wait for propagation
-sleep 20
+# # Wait for propagation
+# sleep 20
 
-# Assign Role
-az role assignment create --assignee $sp --role Owner --scope "/subscriptions/$subscriptionId"
-echo "Role assignment complete!"
+# # Assign Role
+# az role assignment create --assignee $sp --role Owner --scope "/subscriptions/$subscriptionId"
+# echo "Role assignment complete!"
 
 # Create App Role (assuming this part in json format)
 # TODO: Replace this section with actual commands for creating App Role
