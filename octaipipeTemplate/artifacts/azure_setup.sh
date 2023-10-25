@@ -43,8 +43,9 @@ exit 1
 fi
 echo "Email validation complete!"
 
-# Global Variables
-readersAppRoleId=$(uuidgen)
+# Set Global Variables
+# readersAppRoleId=$(uuidgen)
+readersAppRoleId=$readersAppRoleIdGuid
 
 # Set Azure Context
 az account set --subscription $subscriptionId
