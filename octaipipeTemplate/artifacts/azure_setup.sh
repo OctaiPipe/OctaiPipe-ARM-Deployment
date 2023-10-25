@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+az login --identity
+
 # Default values
 customerName="finale5"
 subscriptionId="0376d230-c884-4b5d-80b2-6759120231fc"
