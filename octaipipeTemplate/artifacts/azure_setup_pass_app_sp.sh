@@ -1,11 +1,14 @@
 #!/bin/bash
 set -e
 
-az login --identity -u /subscriptions/0376d230-c884-4b5d-80b2-6759120231fc/resourceGroups/arm-test-deploy5/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ARM-deployer
-echo "Logged to to az with managed identity!"
+az login --service-principal --tenant $AZURE_TENANT_ID --username $AZURE_CLIENT_ID --password $AZURE_CLIENT_SECRET
+
+echo "Logged to to az with Service Princiapl!"
 
 
 # Default values
+sp="4d144ad5-ec4c-4e9a-b1f2-e462aa1950e9"
+app=$AZURE_CLIENT_ID
 customerName="finale5"
 subscriptionId="0376d230-c884-4b5d-80b2-6759120231fc"
 tenantId="9485acfb-a348-4a74-8408-be47f710df4b"
@@ -13,6 +16,8 @@ userEmails_str="michael.tobin@octaipipe.ai"
 
 while getopts ":c:s:t:u:" opt; do
   case $opt in
+    sp) sp="$OPTARG" ;;
+    a) app="$OPTARG" ;;
     c) customerName="$OPTARG" ;;
     s) subscriptionId="$OPTARG" ;;
     t) tenantId="$OPTARG" ;;
