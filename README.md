@@ -10,9 +10,8 @@ The file structure is configured to form a managed application offer i.e. includ
 The OctaiPipe architecture (including sql server, web app etc) is defined in artifacts/linkedTemplate.json.
 
 The mainTemplate:
-- creates a managed identity
-- assigns it a contributor role
-- Runs the artifacts/AzureSPAppAndPermissionsSetup.ps1 deployment script
+- Requires a managed identity
+- Runs the deployment script in artifacts
   - This sets up required azure AD features (app role, permissions, users, group etc.) all of which cannot be handled by ARM template
   - It is referred to by raw github link rather than relatively i.e. https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/AzureSPAppAndPermissionsSetup.ps1. So ensure that changes are pushed before attempt to run deployment locally.
 - Runs the artifacts/linkedTemplate.json template with the outputs from the deployment script.
