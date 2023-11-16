@@ -21,6 +21,19 @@
   },
   "resources": [
     {
+    "apiVersion": "2020-06-01",
+    "name": "pid-832479b0-1f47-4ea0-829b-8e97b9a6bae9-partnercenter",
+    "type": "Microsoft.Resources/deployments",
+    "properties": {
+        "mode": "Incremental",
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "resources": []
+        }
+    }
+},
+    {
       "type": "Microsoft.Resources/deploymentScripts",
       "apiVersion": "2020-10-01",
       "name": "runADSetupScript",
@@ -34,7 +47,7 @@
       },
       "properties": {
         "azCliVersion": "2.47.0",
-        "primaryScriptUri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/azure_setup.sh",
+        "primaryScriptUri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/azureADSetup.sh",
         "environmentVariables": [
           {
             "name": "readersAppRoleIdGuid",
