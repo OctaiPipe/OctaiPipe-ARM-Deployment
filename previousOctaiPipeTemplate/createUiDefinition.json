@@ -1,0 +1,76 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+  "handler": "Microsoft.Azure.CreateUIDef",
+  "version": "0.1.2-preview",
+  "parameters": {
+      "config": {
+          "isWizard": false,
+          "basics": {
+              "description": "Provide basic details for your OctaiPipe setup.",
+              "resourceGroup": {
+                  "allowExisting": true
+              }
+          }
+      },
+      "basics": [
+          {
+              "name": "customerName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Customer Name",
+              "constraints": {
+                  "required": true
+              }
+          },
+          {
+              "name": "userEmails",
+              "type": "Microsoft.Common.TextBox",
+              "label": "User Emails",
+              "toolTip": "Enter email addresses of OctaiPipe users, separated by comma. (Users can be added to user group after deployment).",
+              "multiLine": true,
+              "constraints": {
+                  "required": true
+              }
+          }
+      ],
+      "steps": [
+          {
+              "name": "DeployerManagedIdentity",
+              "label": "DeployerManagedIdentity",
+              "bladeTitle": "Managed Identity",
+              "elements": [
+                  {
+                      "name": "managedIdentityName",
+                      "type": "Microsoft.Common.TextBox",
+                      "label": "Managed Identity Name",
+                      "toolTip": "Enter the name of the Managed Identity which will be used to set up OctaiPipe. Need Application and USer Adminstration roles set in EntraId",
+                      "constraints": {
+                          "required": true
+                      }
+                  },
+                  {
+                      "name": "managedIdentityResourceGroup",
+                      "type": "Microsoft.Common.TextBox",
+                      "label": "Managed Identity Resource Group",
+                      "defaultValue": "[resourceGroup().name]",
+                      "toolTip": "Resource group where the Managed Identity is located. If this is the same Resource Group as deploying to, leave blank.",
+                      "constraints": {
+                          "required": false
+                      }
+                  }
+              ]
+          }
+      ],
+      "outputs": {
+          "customerName": "[basics('customerName')]",
+          "managedIdentityName": "[steps('DeployerManagedIdentity').managedIdentityName]",
+          "managedIdentityResourceGroup": "[steps('DeployerManagedIdentity').managedIdentityResourceGroup]",
+          "userEmails": "[basics('userEmails')]"
+      },
+      "resourceTypes": [
+          "Microsoft.OperationsManagement/solutions",
+          "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+          "Microsoft.Insights/workbooks",
+          "Microsoft.Logic/workflows"
+      ]
+  }
+}
