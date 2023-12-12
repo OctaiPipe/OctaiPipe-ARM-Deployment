@@ -5,28 +5,17 @@
     "customerName": {
       "type": "string"
     },
-    "servicePrincipalAppId" : {
+    "managedIdentityName": {
+      "type": "string"
+    },
+    "managedIdentityResourceGroup": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().Name]"
+    },
+    "userEmails": {
       "type": "string",
       "metadata": {
-        "description": "App Id of Service Principal"
-      }
-    },
-    "servicePrincipalObjectIdList" : {
-      "type": "array",
-      "metadata": {
-        "description": "Object Id of Service Principal"
-      }
-    },
-    "clientSecret" : {
-      "type": "securestring",
-      "metadata": {
-        "description": "Password for Service Principal"
-      }
-    },
-    "groupId" : {
-      "type": "string",
-      "metadata": {
-        "description": "Id of Azure AD Group"
+        "description": "Newline-separated list of user email addresses"
       }
     }
   },
@@ -42,14 +31,20 @@
             "contentVersion": "1.0.0.0",
             "resources": []
         }
-      }
-    },
+    }
+},
     {
       "type": "Microsoft.Resources/deploymentScripts",
       "apiVersion": "2020-10-01",
       "name": "runADSetupScript",
       "location": "[resourceGroup().location]",
       "kind": "AzureCLI",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[resourceId(parameters('managedIdentityResourceGroup'), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]": {}
+        }
+      },
       "properties": {
         "azCliVersion": "2.47.0",
         "primaryScriptUri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/azureADSetup.sh",
@@ -59,11 +54,7 @@
             "value": "[guid(parameters('customerName'))]"
           }
         ],
-        "arguments": "[
-          concat(' -a ', parameters('servicePrincipalAppId'), ' -o ', variables('servicePrincipalObjectId'),
-          ' -s ', parameters('clientSecret'), ' -t ', variables('tenantId'), ' -g ', parameters('groupId')
-          )
-        ]",
+        "arguments": "[concat('-c ', parameters('customerName'), ' -s ', variables('subscriptionId'), ' -t ', variables('tenantId'), ' -u ', parameters('userEmails'))]",
         "timeout": "PT30M",
         "cleanupPreference": "OnSuccess",
         "retentionInterval": "P1D"
@@ -85,20 +76,23 @@
           "customerName": {
             "value": "[parameters('customerName')]"
           },
+          "azureAdGroupName": {
+            "value": "[reference('runADSetupScript').outputs.azureAdGroupName.value]"
+          },
           "azureAdGroupId": {
-            "value": "[parameters('groupId')]"
+            "value": "[reference('runADSetupScript').outputs.azureAdGroupId.value]"
           },
           "clientId": {
-            "value": "[parameters('servicePrincipalAppId')]"
+            "value": "[reference('runADSetupScript').outputs.clientId.value]"
           },
           "tenantId": {
             "value": "[variables('tenantId')]"
           },
           "objectId": {
-            "value": "[variables('servicePrincipalObjectId')]"
+            "value": "[reference('runADSetupScript').outputs.objectId.value]"
           },
           "servicePrincipalSecret": {
-            "value": "[parameters('clientSecret')]"
+            "value": "[reference('runADSetupScript').outputs.servicePrincipalSecret.value]"
           },
           "sqlAdminLogin": {
             "value": "[variables('sqlAdminLoginUser')]"
@@ -121,8 +115,8 @@
     }
   },
   "variables": {
-    "servicePrincipalObjectId": "[first(parameters('servicePrincipalObjectIdList'))]",
     "tenantId": "[replace(subscription().id, '/tenants/', '')]",
+    "subscriptionId": "[replace(subscription().id, '/subscriptions/', '')]",
     "sqlAdminLoginUser": "octaiadmin",
     "sqlAdminLoginPassword": "[substring(uniqueString(resourceGroup().name), 0, 8)]"
   }

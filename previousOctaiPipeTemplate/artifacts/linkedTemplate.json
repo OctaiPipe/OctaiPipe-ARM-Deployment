@@ -6,6 +6,10 @@
       "defaultValue": "24Company",
       "type": "string"
     },
+    "azureAdGroupName": {
+      "defaultValue": "24Company-octaipipe-users ",
+      "type": "string"
+    },
     "azureAdGroupId": {
       "defaultValue": "3d0e930d-ab3d-4634-bed9-2d5da7099d80",
       "type": "string"
@@ -397,7 +401,7 @@
         "administrators": {
           "administratorType": "ActiveDirectory",
           "principalType": "Group",
-          "login": "[concat(parameters('customerName'), '-admin')]",
+          "login": "[parameters('azureAdGroupName')]",
           "sid": "[parameters('azureAdGroupId')]",
           "tenantId": "[parameters('tenantID')]",
           "azureADOnlyAuthentication": false
@@ -413,7 +417,7 @@
       ],
       "properties": {
         "administratorType": "ActiveDirectory",
-        "login": "[concat(parameters('customerName'), '-admin')]",
+        "login": "[parameters('azureAdGroupName')]",
         "sid": "[parameters('azureAdGroupId')]",
         "tenantId": "[parameters('tenantID')]"
       }

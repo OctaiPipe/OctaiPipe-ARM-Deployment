@@ -3,74 +3,75 @@
   "handler": "Microsoft.Azure.CreateUIDef",
   "version": "0.1.2-preview",
   "parameters": {
-      "config": {
-          "isWizard": false,
-          "basics": {
-              "description": "Provide basic details for your OctaiPipe setup.",
-              "resourceGroup": {
-                  "allowExisting": true
-              }
-          }
+    "config": {
+        "isWizard": false,
+        "basics": {
+            "description": "Provide basic details for your OctaiPipe setup.",
+            "resourceGroup": {
+                "allowExisting": true
+            }
+        }
       },
       "basics": [
           {
               "name": "customerName",
               "type": "Microsoft.Common.TextBox",
               "label": "Customer Name",
+              "placeholder": "",
               "constraints": {
-                  "required": true
+                "required": true,
+                "validations": [
+                  {
+                    "regex": "^[a-zA-Z0-9-]{1,30}$",
+                    "message": "Only alphanumeric characters and dashes are allowed. The value must be 1-30 characters long."
+                  }
+                ]
               }
           },
           {
-              "name": "userEmails",
-              "type": "Microsoft.Common.TextBox",
-              "label": "User Emails",
-              "toolTip": "Enter email addresses of OctaiPipe users, separated by comma. (Users can be added to user group after deployment).",
-              "multiLine": true,
-              "constraints": {
-                  "required": true
+            "name": "servicePrincipalApp",
+            "type": "Microsoft.Common.ServicePrincipalSelector",
+            "label": {
+                "password": "Client Secret",
+                "certificateThumbprint": "Ignore",
+                "authenticationType": "Select Password",
+                "sectionHeader": "Service Principal with Cloud Administration Permission"
+            },
+            "toolTip": {
+                "password": "Client Secret",
+                "certificateThumbprint": "Ignore This",
+                "authenticationType": "Authentication Type"
+                },
+            "defaultValue": {
+                "principalId": "<default guid>",
+                "name": "Select Existing or Create New"
+            },
+            "constraints": {
+                "required": true
+            },
+            "options": {
+                "hideCertificate": true
               }
-          }
+          },
+        {
+            "name": "groupId",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Group ID",
+            "toolTip": "Application Id of the Entra Id group owned by Service Principal",
+            "placeholder": "",
+            "constraints": {
+              "required": true,
+              "validations": []
+            }
+        }
       ],
-      "steps": [
-          {
-              "name": "DeployerManagedIdentity",
-              "label": "DeployerManagedIdentity",
-              "bladeTitle": "Managed Identity",
-              "elements": [
-                  {
-                      "name": "managedIdentityName",
-                      "type": "Microsoft.Common.TextBox",
-                      "label": "Managed Identity Name",
-                      "toolTip": "Enter the name of the Managed Identity which will be used to set up OctaiPipe. Need Application and USer Adminstration roles set in EntraId",
-                      "constraints": {
-                          "required": true
-                      }
-                  },
-                  {
-                      "name": "managedIdentityResourceGroup",
-                      "type": "Microsoft.Common.TextBox",
-                      "label": "Managed Identity Resource Group",
-                      "defaultValue": "[resourceGroup().name]",
-                      "toolTip": "Resource group where the Managed Identity is located. If this is the same Resource Group as deploying to, leave blank.",
-                      "constraints": {
-                          "required": false
-                      }
-                  }
-              ]
-          }
-      ],
+      "steps": [],
       "outputs": {
-          "customerName": "[basics('customerName')]",
-          "managedIdentityName": "[steps('DeployerManagedIdentity').managedIdentityName]",
-          "managedIdentityResourceGroup": "[steps('DeployerManagedIdentity').managedIdentityResourceGroup]",
-          "userEmails": "[basics('userEmails')]"
-      },
-      "resourceTypes": [
-          "Microsoft.OperationsManagement/solutions",
-          "Microsoft.OperationalInsights/workspaces/providers/alertRules",
-          "Microsoft.Insights/workbooks",
-          "Microsoft.Logic/workflows"
-      ]
+        "customerName": "[basics('customerName')]",
+        "servicePrincipalAppId": "[basics('servicePrincipalApp').appId]",
+        "servicePrincipalObjectIdList": "[basics('servicePrincipalApp').objectId]",
+        "clientSecret": "[basics('servicePrincipalApp').password]",
+        "groupId": "[basics('groupId')]"
+    }    
   }
 }
