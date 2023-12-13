@@ -26,10 +26,6 @@
       "defaultValue": "lRH8Q~dLZHi9yth9NxULoCT8hENmXjclSbBdpc9H",
       "type": "string"
     },
-    "virtualNetwork_name": {
-      "defaultValue": "sandbox",
-      "type": "string"
-    },
     "sqlAdminLogin": {
       "defaultValue": "octaiadmin",
       "type": "string",
@@ -159,7 +155,7 @@
       }
     },
     {
-      "name": "[parameters('virtualNetwork_name')]",
+      "name": "[variables('customerNameWithoutDashes')]",
       "type": "Microsoft.Network/virtualNetworks",
       "location": "[resourceGroup().location]",
       "apiVersion": "2022-11-01",
@@ -204,9 +200,9 @@
     {
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2022-11-01",
-      "name": "[concat(parameters('virtualNetwork_name'), '/', variables('sandboxSubnet1Name'))]",
+      "name": "[concat(variables('customerNameWithoutDashes'), '/', variables('sandboxSubnet1Name'))]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetwork_name'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('customerNameWithoutDashes'))]"
       ],
       "properties": {
         "addressPrefix": "[variables('sandboxSubnet1Prefix')]",
@@ -216,9 +212,9 @@
     {
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2022-11-01",
-      "name": "[concat(parameters('virtualNetwork_name'), '/', variables('sandboxSubnet2Name'))]",
+      "name": "[concat(variables('customerNameWithoutDashes'), '/', variables('sandboxSubnet2Name'))]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetwork_name'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('customerNameWithoutDashes'))]"
       ],
       "properties": {
         "addressPrefix": "[variables('sandboxSubnet2Prefix')]",
@@ -228,9 +224,9 @@
     {
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2022-11-01",
-      "name": "[concat(parameters('virtualNetwork_name'), '/', variables('sandboxSubnet3Name'))]",
+      "name": "[concat(variables('customerNameWithoutDashes'), '/', variables('sandboxSubnet3Name'))]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetwork_name'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('customerNameWithoutDashes'))]"
       ],
       "properties": {
         "addressPrefix": "[variables('sandboxSubnet3Prefix')]",
@@ -588,7 +584,7 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddress_name'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork_name'), variables('sandboxSubnet3Name'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), variables('sandboxSubnet3Name'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -600,7 +596,7 @@
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddress_name'))]"
               },
               "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork_name'), variables('sandboxSubnet3Name'))]"
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), variables('sandboxSubnet3Name'))]"
               }
             }
           }
@@ -644,7 +640,7 @@
       "name": "[variables('managedClusters_name')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork_name'), 'public1')]"
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), 'public1')]"
       ],
       "tags": {
         "environment": "sandbox"
@@ -664,7 +660,7 @@
             "osDiskSizeGB": 128,
             "osDiskType": "Managed",
             "kubeletDiskType": "OS",
-            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork_name'), 'public1')]",
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), 'public1')]",
             "maxPods": 110,
             "type": "VirtualMachineScaleSets",
             "availabilityZones": [
@@ -690,7 +686,7 @@
             "osDiskSizeGB": 50,
             "osDiskType": "Managed",
             "kubeletDiskType": "OS",
-            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork_name'), 'public1')]",
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), 'public1')]",
             "maxPods": 110,
             "type": "VirtualMachineScaleSets",
             "availabilityZones": [
