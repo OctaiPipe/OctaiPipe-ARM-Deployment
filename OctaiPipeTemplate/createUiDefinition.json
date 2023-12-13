@@ -22,8 +22,8 @@
                 "required": true,
                 "validations": [
                   {
-                    "regex": "^[a-zA-Z0-9-]{1,30}$",
-                    "message": "Only alphanumeric characters and dashes are allowed. The value must be 1-30 characters long."
+                    "regex": "^[a-zA-Z0-9-]{1,15}$",
+                    "message": "Only alphanumeric characters and dashes are allowed. The value must be 1-15 characters long."
                   }
                 ]
               }
