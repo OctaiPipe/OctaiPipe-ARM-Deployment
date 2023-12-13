@@ -7,7 +7,7 @@ while getopts "a:o:s:t:g:" opt; do
     o) objectId="$OPTARG" ;;
     s) clientSecret="$OPTARG" ;;
     t) tenantId="$OPTARG" ;;
-    g) groupId="$OPTARGS" ;;
+    g) groupId="$OPTARG" ;;
     \?) echo -e "\r\nInvalid option -$OPTARG" >&2 ;;
   esac
 done
