@@ -1,10 +1,9 @@
 #!/bin/bash
 set -e
 
-while getopts "a:o:s:t:g:" opt; do
+while getopts "a:s:t:g:" opt; do
   case $opt in
     a) appId="$OPTARG" ;;
-    o) objectId="$OPTARG" ;;
     s) clientSecret="$OPTARG" ;;
     t) tenantId="$OPTARG" ;;
     g) groupId="$OPTARG" ;;
@@ -59,7 +58,7 @@ echo -e "\r\nNew AppRoleAssignment for the group created!"
 
 # # Create JSON output
 # output_json="{
-#   \"objectId\": \"$objectId\",
+#   \"appId\": \"$appId\",
 # }"
 # echo -e "\r\nJSON output created!"
 

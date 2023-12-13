@@ -59,7 +59,7 @@
             "value": "[guid(parameters('customerName'))]"
           }
         ],
-        "arguments": "[concat(' -a ', parameters('servicePrincipalAppId'), ' -o ', variables('servicePrincipalObjectId'),
+        "arguments": "[concat(' -a ', parameters('servicePrincipalAppId'),
           ' -s ', parameters('clientSecret'), ' -t ', variables('tenantId'), ' -g ', parameters('groupId')
           )]",
         "timeout": "PT30M",
@@ -77,7 +77,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/linkedTemplate.json"
+          "uri": "https://raw.githubusercontent.com/OctaiPipe/OctaiPipe-ARM-Deployment/main/OctaiPipeTemplate/artifacts/linkedTemplate.json"
         },
         "parameters": {
           "customerName": {
