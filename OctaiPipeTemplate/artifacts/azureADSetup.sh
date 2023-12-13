@@ -34,7 +34,18 @@ az ad app update --id $appId --app-roles '[
 # readersAppRoleId=$(uuidgen)
 readersAppRoleId=$readersAppRoleIdGuid
 
-app=$appId
+taskReadAppRole="[
+  {
+    \"allowedMemberTypes\": [\"User\", \"Application\"],
+    \"displayName\": \"Readers\",
+    \"description\": \"Access OctaiClient API\",
+    \"isEnabled\": true,
+    \"value\": \"Task.Read\",
+    \"id\": \"$readersAppRoleId\"
+  }
+]"
+
+az ad app update --id $appId --app-roles "$taskReadAppRole"
 sp=$(az ad sp show --id ${appId} --query id -o tsv)
 
 # Setup Authentication
