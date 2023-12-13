@@ -120,7 +120,7 @@
   },
   "variables": {
     "servicePrincipalObjectId": "[first(parameters('servicePrincipalObjectIdList'))]",
-    "tenantId": "[replace(subscription().id, '/tenants/', '')]",
+    "tenantId": "[subscription().tenantId]",
     "sqlAdminLoginUser": "octaiadmin",
     "sqlAdminLoginPassword": "[substring(uniqueString(resourceGroup().name), 0, 8)]"
   }
