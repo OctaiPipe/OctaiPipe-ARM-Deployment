@@ -59,11 +59,9 @@
             "value": "[guid(parameters('customerName'))]"
           }
         ],
-        "arguments": "[
-          concat(' -a ', parameters('servicePrincipalAppId'), ' -o ', variables('servicePrincipalObjectId'),
+        "arguments": "[concat(' -a ', parameters('servicePrincipalAppId'), ' -o ', variables('servicePrincipalObjectId'),
           ' -s ', parameters('clientSecret'), ' -t ', variables('tenantId'), ' -g ', parameters('groupId')
-          )
-        ]",
+          )]",
         "timeout": "PT30M",
         "cleanupPreference": "OnSuccess",
         "retentionInterval": "P1D"
