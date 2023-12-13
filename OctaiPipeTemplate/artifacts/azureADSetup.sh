@@ -12,6 +12,9 @@ while getopts "a:o:s:t:g:" opt; do
   esac
 done
 
+# Remove subscriptins bit if necessary
+tenantId=${tenantId/\/subscriptions\//}
+
 az login --service-principal -u ${appId} -p ${clientSecret} -t ${tenantId} --allow-no-subscription
 
 echo -e "\r\nLogged to to az with Service Principal!"
