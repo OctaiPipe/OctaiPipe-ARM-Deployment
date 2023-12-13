@@ -38,7 +38,7 @@ taskReadAppRole="[
 
 # Add Readers role to app
 az ad app update --id $appId --app-roles "$taskReadAppRole"
-readersAppRoleId=appRoleId=$(az ad app show --id $appId --query "appRoles[?displayName=='Readers'].id" -o tsv)
+readersAppRoleId=$(az ad app show --id $appId --query "appRoles[?displayName=='Readers'].id" -o tsv)
 sp=$(az ad sp show --id ${appId} --query id -o tsv)
 echo -e "\r\nReaders Role added to App!"
 
