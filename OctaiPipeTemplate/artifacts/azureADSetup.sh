@@ -19,17 +19,6 @@ az login --service-principal -u ${appId} -p ${clientSecret} -t ${tenantId} --all
 
 echo -e "\r\nLogged to to az with Service Principal!"
 
-az ad app update --id $appId --app-roles '[
-  {
-    "allowedMemberTypes": ["User", "Application"],
-    "displayName": "Readers",
-    "description": "Access OctaiClient API",
-    "isEnabled": true,
-    "value": "Task.Read",
-    "id": "81dd5fd5-e1d3-47dc-b008-c4d1bf94e145"
-  }
-]'
-
 # Set Global Variables
 # readersAppRoleId=$(uuidgen)
 readersAppRoleId=$readersAppRoleIdGuid
