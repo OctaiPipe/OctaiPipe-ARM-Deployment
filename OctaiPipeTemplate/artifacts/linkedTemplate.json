@@ -3,15 +3,15 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "customerName": {
-      "defaultValue": "24Company",
+      "defaultValue": "company-b",
       "type": "string"
     },
     "azureAdGroupId": {
-      "defaultValue": "3d0e930d-ab3d-4634-bed9-2d5da7099d80",
+      "defaultValue": "17b3dc89-ce10-4f42-8504-4d86f2a721f2",
       "type": "string"
     },
     "clientId": {
-      "defaultValue": "fd3d3d0d-cada-45f6-ab71-deec4b27d8e1",
+      "defaultValue": "5f457681-faa4-4495-8937-e0479e2a0e48",
       "type": "string"
     },
     "tenantId": {
@@ -19,10 +19,11 @@
       "type": "string"
     },
     "objectId": {
-      "defaultValue": "eec11198-29ca-4922-90d0-fa6878002052",
+      "defaultValue": "721a08a9-b7c5-4edd-ad19-04ae3d851f08",
       "type": "string"
     },
     "servicePrincipalSecret": {
+      "defaultValue": "lRH8Q~dLZHi9yth9NxULoCT8hENmXjclSbBdpc9H",
       "type": "string"
     },
     "virtualNetwork_name": {
@@ -30,10 +31,12 @@
       "type": "string"
     },
     "sqlAdminLogin": {
+      "defaultValue": "octaiadmin",
       "type": "string",
       "minLength": 1
     },
     "sqlAdminLoginPassword": {
+      "defaultValue": "octaipassword",
       "type": "securestring"
     }
   },
@@ -651,7 +654,7 @@
         "tier": "Free"
       },
       "properties": {
-        "kubernetesVersion": "1.25.6",
+        "kubernetesVersion": "1.26.6",
         "dnsPrefix": "sandbox",
         "agentPoolProfiles": [
           {
@@ -672,7 +675,7 @@
             "minCount": 1,
             "enableAutoScaling": true,
             "scaleDownMode": "Delete",
-            "orchestratorVersion": "1.25.6",
+            "orchestratorVersion": "1.26.6",
             "tags": {
               "environment": "sandbox"
             },
@@ -698,7 +701,7 @@
             "minCount": 1,
             "enableAutoScaling": true,
             "scaleDownMode": "Delete",
-            "orchestratorVersion": "1.25.6",
+            "orchestratorVersion": "1.26.6",
             "tags": {
               "environment": "sandbox"
             },
@@ -753,15 +756,16 @@
     "sandboxSubnet2Prefix": "10.0.1.0/24",
     "sandboxSubnet3Name": "GatewaySubnet",
     "sandboxSubnet3Prefix": "10.0.2.0/24",
-    "sqlStorageAccount_name": "[toLower(concat(parameters('customerName'), 'sqlstorage'))]",
-    "mlopsStorageAccount_name": "[toLower(concat(parameters('customerName'), 'octaipipemlops'))]",
+    "sqlStorageAccount_name": "[toLower(concat(variables('customerNameWithoutDashes'), 'sqlstorage'))]",
+    "mlopsStorageAccount_name": "[toLower(concat(variables('customerNameWithoutDashes'), 'octaipipemlops'))]",
     "sqlServerName": "[concat(parameters('customerName'), 'octaipipe')]",
     "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default')]",
     "fullyQualifiedOctaiclientDBName": "[concat(variables('sqlServerName'), '/', 'octaiclient')]",
-    "containerRegistryName": "[concat('stable', parameters('customerName'), 'octaipipe')]",
+    "containerRegistryName": "[concat('stable', variables('customerNameWithoutDashes'), 'octaipipe')]",
     "serviceName": "[concat('octaipipe-mlops-', parameters('customerName'))]",
     "serverFarmName": "[concat(parameters('customerName'), '-octaipipe-mlopsapp-plan')]",
     "managedClusters_name": "[concat('sandbox-', parameters('customerName'))]",
-    "clusterNodeResourceGroup_name": "[concat('node-', resourceGroup().name)]"
+    "clusterNodeResourceGroup_name": "[concat('node-', resourceGroup().name)]",
+    "customerNameWithoutDashes": "[replace(parameters('customerName'), '-', '')]"
   }
 }
