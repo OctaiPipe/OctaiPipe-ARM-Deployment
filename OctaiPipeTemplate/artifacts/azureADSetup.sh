@@ -1,10 +1,14 @@
 #!/bin/bash
 set -e
 
+<<<<<<< Updated upstream
 az login --identity -u /subscriptions/0376d230-c884-4b5d-80b2-6759120231fc/resourceGroups/arm-test-deploy5/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ARM-deployer
 echo -e "\r\nLogged to to az with managed identity!"
 
 while getopts ":c:s:t:u:" opt; do
+=======
+while getopts "a:o:s:t:g:" opt; do
+>>>>>>> Stashed changes
   case $opt in
     c) customerName="$OPTARG" ;;
     s) subscriptionId="$OPTARG" ;;

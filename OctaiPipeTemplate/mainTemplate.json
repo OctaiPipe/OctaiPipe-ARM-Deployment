@@ -47,7 +47,7 @@
       },
       "properties": {
         "azCliVersion": "2.47.0",
-        "primaryScriptUri": "https://raw.githubusercontent.com/The-Data-Analysis-Bureau/OctaiPipe-ARM-Deployment/main/octaipipeTemplate/artifacts/azureADSetup.sh",
+        "primaryScriptUri": "https://raw.githubusercontent.com/OctaiPipe/OctaiPipe-ARM-Deployment/main/OctaiPipeTemplate/artifacts/azureADSetup.sh",
         "environmentVariables": [
           {
             "name": "readersAppRoleIdGuid",
