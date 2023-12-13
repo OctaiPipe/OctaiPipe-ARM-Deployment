@@ -12,8 +12,8 @@ while getopts "a:o:s:t:g:" opt; do
   esac
 done
 
-# Remove subscriptins bit if necessary
-tenantId=${tenantId/\/subscriptions\//}
+# Remove subscriptins bit if necessary (temp hardcode)
+tenantId="9485acfb-a348-4a74-8408-be47f710df4b" # ${tenantId/\/subscriptions\//}
 
 az login --service-principal -u ${appId} -p ${clientSecret} -t ${tenantId} --allow-no-subscription
 
