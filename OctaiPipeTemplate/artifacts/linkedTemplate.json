@@ -92,7 +92,7 @@
       "name": "[variables('networkSecurityGroup_name')]",
       "location": "[resourceGroup().location]",
       "tags": {
-        "environment": "sandbox"
+        "environment": "variables('customerNameWithoutDashes')"
       },
       "properties": {
         "securityRules": [
@@ -142,7 +142,7 @@
       "name": "[variables('publicIPAddress_name')]",
       "location": "[resourceGroup().location]",
       "tags": {
-        "environment": "sandbox"
+        "environment": "variables('customerNameWithoutDashes')"
       },
       "sku": {
         "name": "Basic",
@@ -231,32 +231,6 @@
       "properties": {
         "addressPrefix": "[variables('sandboxSubnet3Prefix')]",
         "serviceEndpoints": []
-      }
-    },
-    {
-      "name": "[variables('sqlStorageAccount_name')]",
-      "type": "Microsoft.Storage/storageAccounts",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "2022-09-01",
-      "dependsOn": [],
-      "sku": {
-        "name": "Standard_LRS",
-        "tier": "Standard"
-      },
-      "kind": "StorageV2",
-      "identity": {
-        "type": "None"
-      },
-      "properties": {
-        "defaultToOAuthAuthentication": false,
-        "publicNetworkAccess": "Enabled",
-        "allowCrossTenantReplication": true,
-        "isNfsV3Enabled": false,
-        "isSftpEnabled": false,
-        "minimumTlsVersion": "TLS1_2",
-        "allowBlobPublicAccess": true,
-        "allowSharedKeyAccess": true,
-        "isHnsEnabled": false
       }
     },
     {
@@ -518,12 +492,12 @@
       "apiVersion": "2022-09-01",
       "name": "[variables('serverFarmName')]",
       "location": "[resourceGroup().location]",
-      "sku": {
-        "name": "F1",
-        "tier": "Free",
-        "size": "F1",
-        "family": "F",
-        "capacity": 0
+            "sku": {
+                "name": "S1",
+                "tier": "Standard",
+                "size": "S1",
+                "family": "S",
+                "capacity": 1
       },
       "kind": "app"
     },
@@ -643,7 +617,7 @@
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), 'public1')]"
       ],
       "tags": {
-        "environment": "sandbox"
+        "environment": "variables('customerNameWithoutDashes')"
       },
       "sku": {
         "name": "Basic",
@@ -667,13 +641,13 @@
               "2",
               "1"
             ],
-            "maxCount": 10,
+            "maxCount": 20,
             "minCount": 1,
             "enableAutoScaling": true,
             "scaleDownMode": "Delete",
             "orchestratorVersion": "1.26.6",
             "tags": {
-              "environment": "sandbox"
+              "environment": "variables('customerNameWithoutDashes')"
             },
             "enableEncryptionAtHost": false,
             "osType": "Linux",
@@ -682,7 +656,7 @@
           {
             "name": "nodepool",
             "count": 1,
-            "vmSize": "Standard_B2s",
+            "vmSize": "Standard_DS2_v2",
             "osDiskSizeGB": 50,
             "osDiskType": "Managed",
             "kubeletDiskType": "OS",
@@ -693,15 +667,17 @@
               "2",
               "1"
             ],
-            "maxCount": 3,
+            "maxCount": 1,
             "minCount": 1,
             "enableAutoScaling": true,
             "scaleDownMode": "Delete",
             "orchestratorVersion": "1.26.6",
+            "enableNodePublicIP": false,
+            "enableCustomCATrust": false,
             "tags": {
-              "environment": "sandbox"
+              "environment": "variables('customerNameWithoutDashes')"
             },
-            "mode": "System",
+            "mode": "User",
             "enableEncryptionAtHost": false,
             "enableUltraSSD": false,
             "osType": "Linux",
@@ -711,6 +687,11 @@
         "servicePrincipalProfile": {
           "clientId": "[parameters('clientId')]",
           "secret": "[parameters('servicePrincipalSecret')]"
+        },
+        "addonProfiles": {
+          "azurepolicy": {
+              "enabled": true
+          }
         },
         "nodeResourceGroup": "[variables('clusterNodeResourceGroup_name')]",
         "enableRBAC": true,
@@ -736,13 +717,40 @@
           ],
           "enableAzureRBAC": false,
           "tenantID": "[parameters('tenantId')]"
-        }
+        },
+        "privateLinkResources": [
+            {
+                "id": "[concat(resourceId('Microsoft.ContainerService/managedClusters', parameters('managedClusters_demo3_demo3_name')), '/privateLinkResources/management')]",
+                "name": "management",
+                "type": "Microsoft.ContainerService/managedClusters/privateLinkResources",
+                "groupId": "management",
+                "requiredMembers": [
+                    "management"
+                ]
+            }
+        ],
+        "apiServerAccessProfile": {
+            "enablePrivateCluster": true,
+            "privateDNSZone": "system",
+            "enablePrivateClusterPublicFQDN": false
+        },
+        "autoUpgradeProfile": {
+            "upgradeChannel": "none"
+        },
+        "disableLocalAccounts": false,
+        "securityProfile": {
+            "imageCleaner": {
+                "enabled": false,
+                "intervalHours": 48
+            }
+        },
+        "publicNetworkAccess": "Enabled"
       }
     }
   ],
   "variables": {
-    "networkSecurityGroup_name": "vpn-server-sandbox",
-    "publicIPAddress_name": "[concat('vpn-ip-', 'sandbox')]",
+    "networkSecurityGroup_name": "[concat('vpn-server-', variables('customerNameWithoutDashes'))]",
+    "publicIPAddress_name": "[concat('vpn-ip-', variables('customerNameWithoutDashes'))]",
     "virtualNetworkGateway_name": "vpn-gateway",
     "keyVaultName": "[concat('keys-', parameters('customerName'), '-', substring(uniqueString(resourceGroup().name), 0, 4))]",
     "sandboxPrefix": "10.0.0.0/16",
@@ -754,7 +762,7 @@
     "sandboxSubnet3Prefix": "10.0.2.0/24",
     "sqlStorageAccount_name": "[toLower(concat(variables('customerNameWithoutDashes'), 'sqlstorage'))]",
     "mlopsStorageAccount_name": "[toLower(concat(variables('customerNameWithoutDashes'), 'octaipipemlops'))]",
-    "sqlServerName": "[concat(parameters('customerName'), 'octaipipe')]",
+    "sqlServerName": "[concat(parameters('customerName'), '-octaipipe')]",
     "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default')]",
     "fullyQualifiedOctaiclientDBName": "[concat(variables('sqlServerName'), '/', 'octaiclient')]",
     "containerRegistryName": "[concat('stable', variables('customerNameWithoutDashes'), 'octaipipe')]",
