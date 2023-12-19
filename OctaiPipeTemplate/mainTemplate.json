@@ -122,6 +122,6 @@
     "servicePrincipalObjectId": "[first(parameters('servicePrincipalObjectIdList'))]",
     "tenantId": "[subscription().tenantId]",
     "sqlAdminLoginUser": "octaiadmin",
-    "sqlAdminLoginPassword": "[substring(uniqueString(resourceGroup().name), 0, 8)]"
+    "sqlAdminLoginPassword": "[concat(substring(uniqueString(resourceGroup().name), 0, 8), '!')]"
   }
 }

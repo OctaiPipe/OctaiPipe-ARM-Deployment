@@ -3,27 +3,21 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "customerName": {
-      "defaultValue": "company-b",
       "type": "string"
     },
     "azureAdGroupId": {
-      "defaultValue": "17b3dc89-ce10-4f42-8504-4d86f2a721f2",
       "type": "string"
     },
     "clientId": {
-      "defaultValue": "5f457681-faa4-4495-8937-e0479e2a0e48",
       "type": "string"
     },
     "tenantId": {
-      "defaultValue": "9485acfb-a348-4a74-8408-be47f710df4b",
       "type": "string"
     },
     "objectId": {
-      "defaultValue": "721a08a9-b7c5-4edd-ad19-04ae3d851f08",
       "type": "string"
     },
     "servicePrincipalSecret": {
-      "defaultValue": "lRH8Q~dLZHi9yth9NxULoCT8hENmXjclSbBdpc9H",
       "type": "string"
     },
     "sqlAdminLogin": {
@@ -32,7 +26,6 @@
       "minLength": 1
     },
     "sqlAdminLoginPassword": {
-      "defaultValue": "octaipassword",
       "type": "securestring"
     }
   },
@@ -87,12 +80,44 @@
       }
     },
     {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "name": "[concat(variables('keyVaultName'), '/', 'sql-admin-username')]",
+      "properties": {
+        "attributes": {
+          "enabled": true
+        },
+        "contentType": "text/plain",
+        "value": "[parameters('sqlAdminLogin')]"
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "name": "[concat(variables('keyVaultName'), '/', 'sql-admin-password')]",
+      "properties": {
+        "attributes": {
+          "enabled": true
+        },
+        "contentType": "text/plain",
+        "value": "[parameters('sqlAdminLoginPassword')]"
+      }
+    },
+    {
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2022-11-01",
       "name": "[variables('networkSecurityGroup_name')]",
       "location": "[resourceGroup().location]",
       "tags": {
-        "environment": "variables('customerNameWithoutDashes')"
+        "environment": "[variables('customerNameWithoutDashes')]"
       },
       "properties": {
         "securityRules": [
@@ -142,7 +167,7 @@
       "name": "[variables('publicIPAddress_name')]",
       "location": "[resourceGroup().location]",
       "tags": {
-        "environment": "variables('customerNameWithoutDashes')"
+        "environment": "[variables('customerNameWithoutDashes')]"
       },
       "sku": {
         "name": "Basic",
@@ -617,7 +642,7 @@
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), 'public1')]"
       ],
       "tags": {
-        "environment": "variables('customerNameWithoutDashes')"
+        "environment": "[variables('customerNameWithoutDashes')]"
       },
       "sku": {
         "name": "Basic",
@@ -647,7 +672,7 @@
             "scaleDownMode": "Delete",
             "orchestratorVersion": "1.26.6",
             "tags": {
-              "environment": "variables('customerNameWithoutDashes')"
+              "environment": "[variables('customerNameWithoutDashes')]"
             },
             "enableEncryptionAtHost": false,
             "osType": "Linux",
@@ -675,7 +700,7 @@
             "enableNodePublicIP": false,
             "enableCustomCATrust": false,
             "tags": {
-              "environment": "variables('customerNameWithoutDashes')"
+              "environment": "[variables('customerNameWithoutDashes')]"
             },
             "mode": "User",
             "enableEncryptionAtHost": false,
