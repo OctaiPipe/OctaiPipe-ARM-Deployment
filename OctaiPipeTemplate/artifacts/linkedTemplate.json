@@ -745,7 +745,7 @@
         },
         "privateLinkResources": [
             {
-                "id": "[concat(resourceId('Microsoft.ContainerService/managedClusters', parameters('managedClusters_demo3_demo3_name')), '/privateLinkResources/management')]",
+                "id": "[concat(resourceId('Microsoft.ContainerService/managedClusters', variables('managedClusters_name')), '/privateLinkResources/management')]",
                 "name": "management",
                 "type": "Microsoft.ContainerService/managedClusters/privateLinkResources",
                 "groupId": "management",
@@ -785,8 +785,7 @@
     "sandboxSubnet2Prefix": "10.0.1.0/24",
     "sandboxSubnet3Name": "GatewaySubnet",
     "sandboxSubnet3Prefix": "10.0.2.0/24",
-    "sqlStorageAccount_name": "[toLower(concat(variables('customerNameWithoutDashes'), 'sqlstorage'))]",
-    "mlopsStorageAccount_name": "[toLower(concat(variables('customerNameWithoutDashes'), 'octaipipemlops'))]",
+    "mlopsStorageAccount_name": "[toLower(concat(substring(variables('customerNameWithoutDashes'), 0, 14), 'octaimlops'))]",
     "sqlServerName": "[concat(parameters('customerName'), '-octaipipe')]",
     "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default')]",
     "fullyQualifiedOctaiclientDBName": "[concat(variables('sqlServerName'), '/', 'octaiclient')]",
