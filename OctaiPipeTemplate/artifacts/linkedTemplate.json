@@ -785,7 +785,7 @@
     "sandboxSubnet2Prefix": "10.0.1.0/24",
     "sandboxSubnet3Name": "GatewaySubnet",
     "sandboxSubnet3Prefix": "10.0.2.0/24",
-    "mlopsStorageAccount_name": "[toLower(concat(if(less(variables('customerNameWithoutDashes'), 14), variables('customerNameWithoutDashes'), substring(variables('customerNameWithoutDashes'), 0, 14)), 'octaimlops'))]",
+    "mlopsStorageAccount_name": "[toLower(concat(if(less(length(variables('customerNameWithoutDashes')), 14), variables('customerNameWithoutDashes'), substring(variables('customerNameWithoutDashes'), 0, 14)), 'octaimlops'))]",
     "sqlServerName": "[concat(parameters('customerName'), '-octaipipe')]",
     "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default')]",
     "fullyQualifiedOctaiclientDBName": "[concat(variables('sqlServerName'), '/', 'octaiclient')]",
