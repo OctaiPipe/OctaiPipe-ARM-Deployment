@@ -639,7 +639,8 @@
       "name": "[variables('managedClusters_name')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), 'public1')]"
+        "[resourceId('Microsoft.Network/virtualNetworkGateways', variables('virtualNetworkGateway_name'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), variables('sandboxSubnet1Name'))]"
       ],
       "tags": {
         "environment": "[variables('customerNameWithoutDashes')]"
@@ -659,7 +660,7 @@
             "osDiskSizeGB": 128,
             "osDiskType": "Managed",
             "kubeletDiskType": "OS",
-            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), 'public1')]",
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), variables('sandboxSubnet1Name'))]",
             "maxPods": 110,
             "type": "VirtualMachineScaleSets",
             "availabilityZones": [
@@ -685,7 +686,7 @@
             "osDiskSizeGB": 50,
             "osDiskType": "Managed",
             "kubeletDiskType": "OS",
-            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), 'public1')]",
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('customerNameWithoutDashes'), variables('sandboxSubnet1Name'))]",
             "maxPods": 110,
             "type": "VirtualMachineScaleSets",
             "availabilityZones": [
@@ -777,7 +778,7 @@
     "networkSecurityGroup_name": "[concat('vpn-server-', variables('customerNameWithoutDashes'))]",
     "publicIPAddress_name": "[concat('vpn-ip-', variables('customerNameWithoutDashes'))]",
     "virtualNetworkGateway_name": "vpn-gateway",
-    "keyVaultName": "[concat('keys-', parameters('customerName'), '-', substring(uniqueString(resourceGroup().name), 0, 4))]",
+    "keyVaultName": "[concat('keys-', if(less(length(parameters('customerName')), 14), parameters('customerName'), substring(parameters('customerName'), 0, 14)), '-', substring(uniqueString(resourceGroup().name), 0, 4))]",
     "sandboxPrefix": "10.0.0.0/16",
     "sandboxSubnet1Name": "public1",
     "sandboxSubnet1Prefix": "10.0.0.0/24",
