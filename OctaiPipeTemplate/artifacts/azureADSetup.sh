@@ -28,10 +28,16 @@ taskReadAppRole="[
 ]"
 
 # Add Readers role to app
-az ad app update --id $appId --app-roles "$taskReadAppRole"
-sp=$(az ad sp show --id ${appId} --query id -o tsv)
-echo -e "\r\nReaders Role added to App!"
-
+update_output=$(az ad app update --id $appId --app-roles "$taskReadAppRole" 2>&1)
+if [[ $? -eq 0 ]]; then
+    sp=$(az ad sp show --id ${appId} --query id -o tsv)
+    echo -e "\r\nReaders Role added to App!"
+elif [[ $update_output == *"unless disabled first"* ]]; then
+    echo -e "\r\nReaders Role already on App. Error: $update_output"
+else
+    echo -e "\r\nFailed to add Readers Role to App. Error: $update_output"
+    exit 1
+fi
 
 # Setup Authentication
 nativeClient='https://login.microsoftonline.com/common/oauth2/nativeclient'
@@ -53,9 +59,16 @@ appRoleBody="{
   \"appRoleId\": \"$readersAppRoleId\"
 }"
 echo -e "\r\nUsing ${appRoleBody} as payload to assign role to ${groupId}"
-az rest --method POST --uri "https://graph.microsoft.com/v1.0/groups/$groupId/appRoleAssignments" --body "$appRoleBody" --headers 'Content-Type=application/json'
-echo -e "\r\nNew AppRoleAssignment for the group created!"
 
+update_output=$(az rest --method POST --uri "https://graph.microsoft.com/v1.0/groups/$groupId/appRoleAssignments" --body "$appRoleBody" --headers 'Content-Type=application/json' 2>&1)
+if [[ $? -eq 0 ]]; then
+    echo -e "\r\nNew AppRoleAssignment for the group created!"
+elif [[ $update_output == *"already exists on the object"* ]]; then
+    echo -e "\r\nAppRoleAssignment exists for the group. Error: $update_output"
+else
+    echo -e "\r\nFailed to add Readers Role to App. Error: $update_output"
+    exit 1
+fi
 # # Create JSON output
 # output_json="{
 #   \"appId\": \"$appId\",
