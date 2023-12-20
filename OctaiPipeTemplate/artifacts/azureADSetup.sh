@@ -28,9 +28,9 @@ taskReadAppRole="[
 ]"
 
 # Add Readers role to app
+sp=$(az ad sp show --id ${appId} --query id -o tsv)
 update_output=$(az ad app update --id $appId --app-roles "$taskReadAppRole" 2>&1)
 if [[ $? -eq 0 ]]; then
-    sp=$(az ad sp show --id ${appId} --query id -o tsv)
     echo -e "\r\nReaders Role added to App!"
 elif [[ $update_output == *"unless disabled first"* ]]; then
     echo -e "\r\nReaders Role already on App. Error: $update_output"
