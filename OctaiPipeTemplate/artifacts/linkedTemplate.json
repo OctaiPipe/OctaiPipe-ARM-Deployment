@@ -8,16 +8,13 @@
     "azureAdGroupId": {
       "type": "string"
     },
-    "clientId": {
-      "type": "string"
-    },
     "tenantId": {
       "type": "string"
     },
     "objectId": {
       "type": "string"
     },
-    "servicePrincipalSecret": {
+    "managedIdentityName": {
       "type": "string"
     },
     "sqlAdminLogin": {
@@ -649,6 +646,12 @@
         "name": "Basic",
         "tier": "Free"
       },
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+            "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]": {}
+        }
+      },
       "properties": {
         "kubernetesVersion": "1.26.6",
         "dnsPrefix": "sandbox",
@@ -693,7 +696,7 @@
               "2",
               "1"
             ],
-            "maxCount": 1,
+            "maxCount": 3,
             "minCount": 1,
             "enableAutoScaling": true,
             "scaleDownMode": "Delete",
@@ -710,10 +713,10 @@
             "osSKU": "Ubuntu"
           }
         ],
-        "servicePrincipalProfile": {
-          "clientId": "[parameters('clientId')]",
-          "secret": "[parameters('servicePrincipalSecret')]"
-        },
+        // "servicePrincipalProfile": {
+        //   "clientId": "[parameters('clientId')]",
+        //   "secret": "[parameters('servicePrincipalSecret')]"
+        // },
         "addonProfiles": {
           "azurepolicy": {
               "enabled": true
@@ -787,7 +790,7 @@
     "sandboxSubnet3Name": "GatewaySubnet",
     "sandboxSubnet3Prefix": "10.0.2.0/24",
     "mlopsStorageAccount_name": "[toLower(concat(if(less(length(variables('customerNameWithoutDashes')), 14), variables('customerNameWithoutDashes'), substring(variables('customerNameWithoutDashes'), 0, 14)), 'octaimlops'))]",
-    "sqlServerName": "[concat(parameters('customerName'), '-octaipipe')]",
+    "sqlServerName": "[concat(parameters('customerName'), 'octaipipe')]",
     "maintenanceConfigurationId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default')]",
     "fullyQualifiedOctaiclientDBName": "[concat(variables('sqlServerName'), '/', 'octaiclient')]",
     "containerRegistryName": "[concat('stable', variables('customerNameWithoutDashes'), 'octaipipe')]",

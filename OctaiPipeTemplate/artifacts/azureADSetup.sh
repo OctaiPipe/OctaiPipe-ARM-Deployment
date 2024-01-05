@@ -4,6 +4,7 @@ set -e
 while getopts "a:s:t:g:" opt; do
   case $opt in
     a) appId="$OPTARG" ;;
+    c) customerName="$OPTARG" ;;
     s) clientSecret="$OPTARG" ;;
     t) tenantId="$OPTARG" ;;
     g) groupId="$OPTARG" ;;
@@ -43,6 +44,19 @@ nativeClient='https://login.microsoftonline.com/common/oauth2/nativeclient'
 liveSDK='https://login.live.com/oauth20_desktop.srf'
 msalonly="msal$appId://auth"
 az ad app update --id $appId --public-client-redirect-uris "http://localhost" $nativeClient $liveSDK $msalonly
+
+webAppAddress="https://octaipipe-mlops-$customerName.azurewebsites.net"
+webAppAddressAlias="https://app.$customerName.octaipipe.ai"
+az ad app update --id $appId --identifier-uris api://$appId
+az ad app update --id $appId --enable-id-token-issuance true
+
+az rest --method "patch" \
+  --uri "https://graph.microsoft.com/v1.0/applications/1a3d87b0-7595-40b2-aeca-1028a88a2969" \
+  --headers "Content-Type=application/json" \
+  --body "{\"spa\": {\"redirectUris\": [\"$webAppAddress\", \"$webAppAddressAlias\", \
+          \"$webAppAddress/swagger/oauth2-redirect.html\", \"$webAppAddressAlias/swagger/oauth2-redirect.html\", \
+          \"http://localhost:44474\", \"http://localhost:44474/swagger/oauth2-redirect.html\"]}}"
+
 echo -e "\r\nAuthentication setup complete!"
 
 

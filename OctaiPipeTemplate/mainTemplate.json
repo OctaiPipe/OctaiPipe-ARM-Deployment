@@ -45,6 +45,37 @@
       }
     },
     {
+        "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+        "apiVersion": "2023-01-31",
+        "name": "[variables('OctaiPipe_Managed_Identity_name')]",
+        "location": "[resourceGroup().location]"
+    },
+    {
+        "type": "Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials",
+        "apiVersion": "2023-01-31",
+        "name": "[concat(variables('OctaiPipe_Managed_Identity_name'), '/OctaiPipe-Architecture-Workflows-Credential')]",
+        "properties": {
+            "audiences": [ "api://AzureADTokenExchange" ],
+            "issuer": "https://token.actions.githubusercontent.com",
+            "subject": "[concat('repo:OctaiPipe/OctaiPipe-Architecture:environment:', variables('lowerCustomerName'))]"
+        },
+        "dependsOn": [
+            "[variables('OctaiPipe_Managed_Identity_name')]"
+        ]
+    },
+    {
+        "type": "Microsoft.Authorization/roleAssignments",
+        "apiVersion": "2022-04-01",
+        "name": "[guid(resourceGroup().id, variables('OctaiPipe_Managed_Identity_name'), 'contributor')]",
+        "properties": {
+            "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+            "principalId": "[reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('OctaiPipe_Managed_Identity_name')), '2023-01-31').principalId]"
+        },
+        "dependsOn": [
+            "[variables('OctaiPipe_Managed_Identity_name')]"
+        ]
+    },
+    {
       "type": "Microsoft.Resources/deploymentScripts",
       "apiVersion": "2020-10-01",
       "name": "runADSetupScript",
@@ -59,7 +90,7 @@
             "value": "[guid(parameters('customerName'))]"
           }
         ],
-        "arguments": "[concat(' -a ', parameters('servicePrincipalAppId'),
+        "arguments": "[concat(' -a ', parameters('servicePrincipalAppId'), ' -c ', variables('lowerCustomerName'),
           ' -s ', parameters('clientSecret'), ' -t ', variables('tenantId'), ' -g ', parameters('groupId')
           )]",
         "timeout": "PT30M",
@@ -81,7 +112,7 @@
         },
         "parameters": {
           "customerName": {
-            "value": "[parameters('customerName')]"
+            "value": "[variables('lowerCustomerName')]"
           },
           "azureAdGroupId": {
             "value": "[parameters('groupId')]"
@@ -94,6 +125,9 @@
           },
           "objectId": {
             "value": "[variables('servicePrincipalObjectId')]"
+          },
+          "managedIdentityName": {
+            "value": "[variables('OctaiPipe_Managed_Identity_name')]"
           },
           "servicePrincipalSecret": {
             "value": "[parameters('clientSecret')]"
@@ -119,6 +153,8 @@
     }
   },
   "variables": {
+    "lowerCustomerName": "[toLower(parameters('customerName'))]",
+    "OctaiPipe_Managed_Identity_name": "[concat(variables('lowerCustomerName'), '-', 'OctaiPipe-Managed-Identity')]",
     "servicePrincipalObjectId": "[first(parameters('servicePrincipalObjectIdList'))]",
     "tenantId": "[subscription().tenantId]",
     "sqlAdminLoginUser": "octaiadmin",
