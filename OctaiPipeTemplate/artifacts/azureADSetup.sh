@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-while getopts "a:s:t:g:" opt; do
+while getopts "a:c:s:t:g:" opt; do
   case $opt in
     a) appId="$OPTARG" ;;
     c) customerName="$OPTARG" ;;
