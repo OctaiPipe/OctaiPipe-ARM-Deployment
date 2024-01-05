@@ -8,10 +8,16 @@
     "azureAdGroupId": {
       "type": "string"
     },
+    "clientId": {
+      "type": "string"
+    },
     "tenantId": {
       "type": "string"
     },
     "objectId": {
+      "type": "string"
+    },
+    "servicePrincipalSecret": {
       "type": "string"
     },
     "managedIdentityName": {
