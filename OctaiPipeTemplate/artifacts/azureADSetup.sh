@@ -81,6 +81,8 @@ else
     echo -e "\r\nFailed to add Readers Role to App. Error: $update_output"
     exit 1
 fi
+
+echo -e "Azure AD setup complete!"
 # # Create JSON output
 # output_json="{
 #   \"appId\": \"$appId\",
