@@ -49,6 +49,8 @@ webAppAddress="https://octaipipe-mlops-$customerName.azurewebsites.net"
 webAppAddressAlias="https://app.$customerName.octaipipe.ai"
 az ad app update --id $appId --identifier-uris api://$appId
 az ad app update --id $appId --enable-id-token-issuance true
+az ad app update --id $appId --web-redirect-uris "https://notebook.${customerName}.octaipipe.ai/authservice/oidc/callback"
+
 
 objectId=$(az ad app list --filter "appId eq '$appId'" --query "[].id" -o tsv)
 az rest --method "patch" \
