@@ -50,8 +50,9 @@ webAppAddressAlias="https://app.$customerName.octaipipe.ai"
 az ad app update --id $appId --identifier-uris api://$appId
 az ad app update --id $appId --enable-id-token-issuance true
 
+objectId=$(az ad app list --filter "appId eq '$appId'" --query "[].id" -o tsv)
 az rest --method "patch" \
-  --uri "https://graph.microsoft.com/v1.0/applications/1a3d87b0-7595-40b2-aeca-1028a88a2969" \
+  --uri "https://graph.microsoft.com/v1.0/applications/$objectId" \
   --headers "Content-Type=application/json" \
   --body "{\"spa\": {\"redirectUris\": [\"$webAppAddress\", \"$webAppAddressAlias\", \
           \"$webAppAddress/swagger/oauth2-redirect.html\", \"$webAppAddressAlias/swagger/oauth2-redirect.html\", \
