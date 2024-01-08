@@ -82,7 +82,7 @@ else
     exit 1
 fi
 
-echo -e "Azure AD setup complete!"
+echo -e "\nAzure AD setup complete!"
 # # Create JSON output
 # output_json="{
 #   \"appId\": \"$appId\",
